@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 14:31:33 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/01/29 14:00:34 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/01/29 14:39:13 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,4 +15,5 @@
 #include <list>
 #include <cstring>
 #include <string>
+#include <cstdlib>
  

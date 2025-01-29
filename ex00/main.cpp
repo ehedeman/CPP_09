@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 14:30:06 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/01/29 14:35:32 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/01/29 14:40:01 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ void	set_date(std::string temp, int &i, std::string &date)
 	}
 }
 
-int	year(std::list<std::string> &csv)
+void	date(std::list<std::string> &csv)
 {
 	std::list<std::string>::iterator it;
 	int year;
@@ -162,13 +162,13 @@ int	year(std::list<std::string> &csv)
 		set_date(temp, i, s_day);
 	
 		char	**ptr = new char *;
-		year = (int)std::strtof(s_year.c_str(), ptr);
+		year = (int)std::strtod(s_year.c_str(), ptr);
 		if (**ptr && (strlen(*ptr) != 1))
 			std::cout	<< "error";
-		month = (int)std::strtof(s_month.c_str(), ptr);
+		month = (int)std::strtod(s_month.c_str(), ptr);
 		if (**ptr && (strlen(*ptr) != 1))
 			std::cout	<< "error";
-		day = (int)std::strtof(s_day.c_str(), ptr);
+		day = (int)std::strtod(s_day.c_str(), ptr);
 		if (**ptr && (strlen(*ptr) != 1))
 			std::cout	<< "error";
 		if (year < 2009 || year > 2024)
@@ -177,22 +177,17 @@ int	year(std::list<std::string> &csv)
 			bad_input(*it);
 		if (check_day(day, month, year))
 			bad_input(*it);
-		std::cout << *it << std::endl; 
+		std::cout << s_year + "-" + s_month + "-" + s_day<< std::endl; 
 		it++;
 	}
+	
 }
 
 
-void	date(std::list<std::string> &csv, std::list<std::string> &list)
-{
-	year(csv, list);
-	// month(csv, list);
-	// day(csv, list);
-}
 
 void	value(std::list<std::string> &csv)
 {
-	
+	(void)csv;
 }
 
 int main(int argc, char **argv)
@@ -207,6 +202,6 @@ int main(int argc, char **argv)
 	char  *filename = argv[1];
 	if (fileStuff(filename, list, csv))
 		return (0);
-	date(csv, list);
+	date(csv);
 	value(csv);
 }
