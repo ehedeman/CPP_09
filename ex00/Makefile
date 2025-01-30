@@ -6,7 +6,7 @@
 #    By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/14 14:53:54 by ehedeman          #+#    #+#              #
-#    Updated: 2025/01/28 14:30:00 by ehedeman         ###   ########.fr        #
+#    Updated: 2025/01/30 15:18:50 by ehedeman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,7 +40,7 @@ clean:
 
 fclean: clean
 	$(RM) -f $(NAME)
-	$(RM) file.txt
+#	$(RM) file.txt
 
 re: fclean all
 
