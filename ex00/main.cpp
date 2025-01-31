@@ -6,12 +6,11 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 14:30:06 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/01/30 15:23:59 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/01/31 11:52:23 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitcoinExchange.hpp"
-#include "BitcoinExchange.cpp"
 
 
 int main(int argc, char **argv)

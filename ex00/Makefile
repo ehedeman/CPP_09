@@ -6,19 +6,20 @@
 #    By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/14 14:53:54 by ehedeman          #+#    #+#              #
-#    Updated: 2025/01/30 15:18:50 by ehedeman         ###   ########.fr        #
+#    Updated: 2025/01/31 11:51:48 by ehedeman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = btc
 
-SRC =	main.cpp	\
+SRC =	main.cpp			\
+		BitcoinExchange.cpp	\
 
 OBJS_DIR = objs/
 OBJS = $(SRC:.cpp=.o)
 OBJS_PREFIXED = $(addprefix $(OBJS_DIR), $(OBJS))
 
-INCLUDES =	
+INCLUDES =	BitcoinExchange.hpp
 
 CXX = c++
 
