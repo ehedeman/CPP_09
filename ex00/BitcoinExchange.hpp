@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 14:31:33 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/01/30 15:46:31 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/01/31 11:05:38 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@
 #include <cstdlib>
 #include <limits>
 #include <float.h>
- 
+#define FORMAT "0000-00-00 |"
+#define HEADLINE "date | value"
+
 class BitcoinExchange
 {
 private:
@@ -51,6 +53,7 @@ public:
 	std::list<std::string>				getCSVData()const;
 	std::list<std::string>::iterator	getIterator()const;
 
+	void								rightFormat(std::list<std::string>	&list);
 	std::list<std::string>::iterator	findClosest(std::string date);
 	float								findValueCSV(std::string date);
 	float								calculateCourse(std::string current);//course
@@ -65,5 +68,10 @@ public:
 	void								dataInit(std::list<std::string> &list);
 
 	void								BitCoinExchangeMain();	//date()
+	class WrongFormatException : public std::exception
+	{
+		public:
+			const char* what() const throw();
+	};
 };
 	

@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 14:31:14 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/01/30 16:37:29 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/01/31 11:07:37 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,40 @@ const std::string					BitcoinExchange::getFilename()const{return (this->filename
 std::list<std::string>				BitcoinExchange::getFileData()const{return (this->fileData);}
 std::list<std::string>				BitcoinExchange::getCSVData()const{return (this->csvData);}
 std::list<std::string>::iterator	BitcoinExchange::getIterator()const{return (this->it);}
+
+
+void								BitcoinExchange::rightFormat(std::list<std::string>	&list)
+{
+	std::list<std::string>::iterator iterator = list.begin();
+
+	std::string str = *iterator;
+	for (size_t i = 0; i < strlen(HEADLINE); i++)
+	{
+		if (!str[i])
+			throw WrongFormatException();
+		else if (str[i] != HEADLINE[i])
+			throw WrongFormatException();
+	}
+	iterator++;
+	while (iterator != list.end())
+	{
+		std::string str = *iterator;
+		for (size_t i = 0; i < strlen(FORMAT); i++)
+		{
+			if (!str[i])
+				throw WrongFormatException();
+			else if (i < 4 && !isdigit(str[i]))
+				throw WrongFormatException();
+			else if ((i > 4 && i < 7) && !isdigit(str[i]))
+				throw WrongFormatException();
+			else if ((i > 7 && i < 10) && !isdigit(str[i]))
+				throw WrongFormatException();
+			else if (i > 9 && (str[i] != FORMAT[i]))
+				throw WrongFormatException();
+		}
+		iterator++;
+	}
+}
 
 std::list<std::string>::iterator	BitcoinExchange::findClosest(std::string date)
 {
@@ -273,6 +307,7 @@ int		BitcoinExchange::readFile()//filestuff
 		while (std::getline(file, buff))
 			list.push_back(buff);
 		file.close();
+		rightFormat(list);
 		this->dataInit(list);
 		// this->printList(list);
 		// std::cout << std::endl;
@@ -382,3 +417,7 @@ void	BitcoinExchange::BitCoinExchangeMain()
 	}
 }	//date()
 	
+const char* BitcoinExchange::WrongFormatException::what() const throw()
+{
+	return "Error: wrong format.";
+}
