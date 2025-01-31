@@ -1,0 +1,33 @@
+whats left to calculate: 8 9 * 9 - 9 - 9 - 4 - 1 +
+what's being calculated: 8 9 * = 8*9 = 72
+
+whats left to calculate: 9 - 9 - 9 - 4 - 1 +
+what's being calculated: 72 9 - = 72 - 9 = 63
+
+whats left to calculate: 9 - 9 - 4 - 1 +
+what's being calculated: 63 9 - = 63 - 9 = 54
+
+whats left to calculate: 9 - 4 - 1 +
+what's being calculated: 54 9 - = 54 - 9 = 45
+
+whats left to calculate: 4 - 1 +
+what's being calculated: 45 4 - = 45 - 4 = 41
+
+whats left to calculate: 1 +
+what's being calculated: 41 1 + = 41 + 1 = 42
+
+New example:
+whats left to calculate: 1 2 * 2 / 2 * 2 4 - +
+what's being calculated: 1 2 * = 1 * 2 = 2
+
+whats left to calculate: 2 / 2 * 2 4 - +
+what's being calculated: 2 2 / = 2 / 2 = 1
+
+whats left to calculate: 2 * 2 4 - +
+what's being calculated: 1 2 * = 1 * 2 = 2
+
+whats left to calculate: 2 4 - +
+what's being calculated: 2 2 4 - =  2  2 - 4 = 2 -2 //dont ask why, just accept
+
+whats left to calculate: +
+what's being calculated: 2 -2 + =  2  + -2 = 0
