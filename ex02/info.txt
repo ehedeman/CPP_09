@@ -1,0 +1,19 @@
+PAIRLEVEL0	= 0 1 9 3 5 2 5 2 4 2 9 6 2 3 1 8
+
+PAIRLEVEL1	= 0 1 9 3 5 2 5 2	4 2 9 6 2 3 1 8
+PAIRLEVEL2	= 0 1 9 3	5 2 5 2		4 2 9 6		2 3 1 8
+PAIRLEVEL3	= 0 1	9 3		5 2		5 2		4 2		9 6		2 3		1 8
+
+etc.
+
+PAIRLEVEL1 = anzahl der elemente / 1 (um beim 1. element des nächsten paars zu landen. -> std::pair aufteilung)
+PAIRLEVEL2 = anzahl der elemente / 2*PAIRLEVEL(hier 2) (um beim 1. element des nächsten paars zu landen.)
+
+Max. PAIRLEVEL berechnen: Anz. Elemente
+
+also entweder std::pair() um zumindest die base level pairs hinzubekommen, von da aus kann man
+mit pairlevel blah arbeieten
+
+oder pairlevel als base und dann immer so und so viele mal pairlevel skippen um zum naechsten,
+pairlevel according pair zu kommen idkkkkk
+
