@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:25 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/02/05 15:33:46 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/02/07 15:41:51 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,12 @@
 #include <cstring>
 #include <sys/time.h>
 #include <ctime>
+#include <cmath>
 #include <time.h>
 
 class PmergeMe
 {
 private:
-	// std::deque<std::pair<unsigned int, unsigned int> > 	pair_deque;		//sorting in pairs as deque
-	// std::vector<std::pair<unsigned int, unsigned int> >	pair_vec;		//sorting in pairs as vector
 	std::deque<unsigned int> _deque;					//sorting in pairs as deque
 	std::vector<unsigned int> _vec;					//sorting in pairs as vector
 	std::vector<unsigned int>							_s;			//for printing input and putting everything together in the end
@@ -46,15 +45,14 @@ public:
 	void							readArgs();
 	template <typename T>	void	printContainer(T &container, int mode);
 	void							printTime(std::string type);
-	void							mergeInsertionSort(std::vector<unsigned int>&array, int sorting_level);
-	void							mergeInsertionSort(std::deque<unsigned int>&array, int sorting_level);
-	// template <typename T>	void	swapNumbers(std::pair<T, T> &pair);
+	template <typename T> void		mergeInsertionSort(T &array, int sorting_level);
+	template <typename T> void 		copy_to_s(T &container);
 	template <typename T>	void	swapPairs(T it, int PL);
 	template <typename T>	bool	isSorted(T first, T second);
 	template <typename T>	T		next(T start, size_t steps);
-	//template <typename T>	bool	isPairsSorted(std::pair<T, T> &pair1, std::pair<T, T> &pair2);
-	// template <typename T> int	getPairLevel(T &container);
-	// template <typename T> void	sortByLevel(T &container, int pairlevel);
+	long 							_jn(long n);
+
+
 	class InvalidInputException : public std::exception
 	{
 		public:
