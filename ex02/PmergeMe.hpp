@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:25 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/02/07 15:41:51 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/02/10 15:42:43 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,15 @@ public:
 	void							readArgs();
 	template <typename T>	void	printContainer(T &container, int mode);
 	void							printTime(std::string type);
-	template <typename T> void		mergeInsertionSort(T &array, int sorting_level);
-	template <typename T> void 		copy_to_s(T &container);
+	void							mergeInsertionSort(std::vector<unsigned int> &array, int sorting_level);
+	void							mergeInsertionSort(std::deque<unsigned int> &array, int sorting_level);
+	template <typename T> void 		_copy(T &container, std::vector<int> &copy);
 	template <typename T>	void	swapPairs(T it, int PL);
 	template <typename T>	bool	isSorted(T first, T second);
-	template <typename T>	T		next(T start, size_t steps);
+	void							checkDouble(unsigned int arg);
 	long 							_jn(long n);
+	template <typename T> void		jacobsthal_number(std::vector<T> &main, \
+		std::vector<T> &to_append);
 
 
 	class InvalidInputException : public std::exception
@@ -58,7 +61,12 @@ public:
 		public:
 			const char* 			what() const throw();
 	};
-		class UnableToGetNumberException : public std::exception
+	class UnableToGetNumberException : public std::exception
+	{
+		public:
+			const char* 			what() const throw();
+	};
+	class DoubleNumberException : public std::exception
 	{
 		public:
 			const char* 			what() const throw();
