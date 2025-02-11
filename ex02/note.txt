@@ -1,3 +1,0 @@
-use queue (mainly because of the display of numbers ngl) and vector
-
-queue for display and vector to sort
