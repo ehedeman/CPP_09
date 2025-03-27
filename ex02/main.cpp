@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:15:01 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/02/03 12:33:55 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/03/27 11:53:44 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,4 @@ int main(int argc, char **argv)
     {
         std::cerr << e.what() << '\n';
     }
-    
-    
-
-    
 }

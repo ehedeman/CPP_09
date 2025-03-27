@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:33 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/02/11 12:09:41 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/03/27 14:43:41 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 PmergeMe::PmergeMe(const int _argc, char **_argv): argv(_argv), \
 	argc(_argc), odd_number(-1)
 {
-	gettimeofday(&start, NULL);
 	getSorted();
 }
 
@@ -47,15 +46,30 @@ int				PmergeMe::getArgc()const{return(this->argc);}
 void			PmergeMe::getSorted()
 {
 	readArgs();
-	printContainer(this->_s, 1);
-	gettimeofday(&end_data_management, NULL);
-	mergeInsertionSort(this->_vec, 1);
-	printTime("vector");
-	mergeInsertionSort(this->_deque, 1);
-	printTime("deque");
-	printTime("[...]");
-	printContainer(this->_deque, 0);
+	std::string str = "\0";
+	printContainer(this->_s, 1, str, DEBUG_OFF);
 	
+	/*--------------------------------Vector----------------------------------*/
+
+	gettimeofday(&t_vec_start, NULL);
+	mergeInsertionSort(this->_vec, 1);
+
+	/*---------------------------------Deque----------------------------------*/
+	gettimeofday(&t_deq_start, NULL);
+	mergeInsertionSort(this->_deque, 1);
+
+	/*---------------------------------Print----------------------------------*/
+
+	printContainer(this->_vec, 0, "vector", DEBUG_OFF);
+	//printContainer(this->_deque, 0, "deque", DEBUG_OFF);
+	printTime("vector", t_vec_start, t_vec_end);
+	printTime("deque", t_deq_start, t_deq_end);
+
+	/*--------------------------------Debug-----------------------------------*/
+
+	// std::cout << std::endl << "Full containers sorted: " << std::endl;
+	// printContainer(this->_deque, 0, "deque", DEBUG_ON);
+	// printContainer(this->_vec, 0, "vector", DEBUG_ON);
 }
 
 /*------------------------------input processing -----------------------------*/
@@ -109,7 +123,7 @@ void			PmergeMe::readArgs()
 	}
 }
 
-/*------------------------------helper functions-----------------------------*/
+/*-----------------------------template functions-----------------------------*/
 
 template <typename T>  T	next(T start, int steps)
 {
@@ -120,33 +134,6 @@ template <typename T>  T	next(T start, int steps)
 template <typename T> bool _operator(T lv, T rv) { return *lv < *rv; }
 
 long PmergeMe::_jn(long n) { return round((pow(2, n + 1) + pow(-1, n)) / 3); }
-
-template <typename T> void PmergeMe::_copy(T &array, int sorting_level, \
-	std::vector<typename T::iterator> &main)
-{
-	typedef typename T::iterator Iterator;
-	std::vector<int> copy;
-
-	copy.reserve(array.size());
-	for (typename std::vector<Iterator>::iterator it = main.begin(); \
-		it != main.end(); it++)
-	{
-		for (int i = 0; i < sorting_level; i++)
-		{
-			Iterator pair_start = *it;
-			std::advance(pair_start, -sorting_level + i + 1);
-			copy.insert(copy.end(), *pair_start);
-		}
-	}
-	typename T::iterator array_it = array.begin();
-	std::vector<int>::iterator copy_it = copy.begin();
-	while (copy_it != copy.end())
-	{
-		*array_it = *copy_it;
-		array_it++;
-		copy_it++;
-	}
-}
 
 template <typename T> void	PmergeMe::swapPairs(T it, int PL)
 {
@@ -167,19 +154,19 @@ template <typename T>	bool	PmergeMe::isSorted(T first, T second)
 	return true;
 }
 
-void						PmergeMe::printTime(std::string type)
+void						PmergeMe::printTime(std::string type, timeval start, timeval end)
 {
 	timeval now;
 	gettimeofday(&now, NULL);
 	std::cout								<<
 	"time to process a range of: "			<<	this->_s.size()	<<
 	" elements with std::"	+	type 	+		" : "			<<
-	(now.tv_usec - this->start.tv_usec)		<<	" us "			<<
+	(end.tv_usec - start.tv_usec)		<<	" us "			<<
 	std::endl;
 }
 
 template <typename T> void	PmergeMe::printContainer(T &array, \
-	int mode)
+	int mode, std::string type, int debug)
 {
 	typename T::iterator it = array.begin();
 
@@ -187,7 +174,7 @@ template <typename T> void	PmergeMe::printContainer(T &array, \
 		std::cout << "Before: ";
 	else
 		std::cout << "After: ";
-	if (array.size() < 6)
+	if (array.size() < 6 || debug == DEBUG_ON)
 	{
 		while (it != array.end())
 		{
@@ -204,11 +191,10 @@ template <typename T> void	PmergeMe::printContainer(T &array, \
 		}
 		std::cout << "[...]";
 	}
-	std::cout << std::endl;
+	std::cout << " " + type << std::endl;
 }
 
-/*-----------------------------sorting functions-------------------------------*/
-
+/*------------------------------vector functions-----------------------------*/
 
 void	PmergeMe::mergeInsertionSort(std::vector<unsigned int> &array, \
 	int sorting_level)
@@ -238,57 +224,80 @@ void	PmergeMe::mergeInsertionSort(std::vector<unsigned int> &array, \
 
 	mergeInsertionSort(array, sorting_level * 2);
 
+
 	std::vector<Iterator> main;
 	std::vector<Iterator> to_append;
 
-	jacobsthal_number(main, to_append);
-	insert(array, main, to_append, sorting_level, pair_units);
+	insert(array, main, to_append, sorting_level, pair_units, is_odd, end);
 	_copy(array, sorting_level, main);
+	gettimeofday(&t_vec_end, NULL);
 }
 
-void		PmergeMe::mergeInsertionSort(std::deque<unsigned int> &array, \
-	int sorting_level)
+void		PmergeMe::insert(std::vector<unsigned int> &array, \
+	std::vector<std::vector<unsigned int>::iterator> &main, \
+	std::vector<std::vector<unsigned int>::iterator> &to_append, \
+	int sorting_level, int pair_units, bool is_odd, \
+	std::vector<unsigned int>::iterator end)
 {
-	typedef std::deque<unsigned int>::iterator Iterator;
-
-	int pair_units = array.size() / sorting_level;
-	if (pair_units < 2)
-		return ;
-
-	bool is_odd = pair_units % 2 == 1;
-
-	Iterator start = array.begin();
-	Iterator last = next(array.begin(), sorting_level * (pair_units));
-	Iterator end = next(last, -(is_odd * sorting_level));
-
-	int			steps = 2 * sorting_level;
-
-
-	for (Iterator it = start; it != end; std::advance(it, steps))
+	typedef std::vector<unsigned int>::iterator Iterator;
+	main.insert(main.end(), next(array.begin(), sorting_level - 1));
+	main.insert(main.end(), next(array.begin(), sorting_level * 2 - 1));
+	
+	for (int i = 4; i <= pair_units; i += 2)
 	{
-		Iterator _this = next(it, sorting_level - 1);
-		Iterator _next = next(it, sorting_level * 2 - 1);
-		if (*_this > *_next)
-			swapPairs(_this, sorting_level);
+		to_append.insert(to_append.end(), next(array.begin(), \
+			sorting_level * (i - 1) - 1));
+		main.insert(main.end(), next(array.begin(), sorting_level * i - 1));
 	}
 
-	mergeInsertionSort(array, sorting_level * 2);
-
-	std::vector<Iterator> main;
-	std::vector<Iterator> to_append;
-
+	if (is_odd)
+		to_append.insert(to_append.end(), next(end, sorting_level - 1));
+	
 	jacobsthal_number(main, to_append);
-	insert(array, main, to_append, sorting_level, pair_units);
-	_copy(array, sorting_level, main);
+
+	for (size_t i = 0; i < to_append.size(); i++)
+	{
+		typename std::vector<Iterator>::iterator _cp = \
+			next(to_append.begin(), i);
+		typename std::vector<Iterator>::iterator _cb = \
+			next(main.begin(), main.size() - to_append.size() + i);
+		typename std::vector<Iterator>::iterator idx = \
+			std::upper_bound(main.begin(), _cb, *_cp, _operator<Iterator>);
+		main.insert(idx, *_cp);
+	}
 }
 
-
-/*-----------------------------sorting helper functions------------------------*/
-
-
-template <typename T> void	PmergeMe::jacobsthal_number(std::vector<T> &main, \
-	std::vector<T> &to_append)
+void PmergeMe::_copy(std::vector<unsigned int> &array, int sorting_level, \
+	std::vector<std::vector<unsigned int>::iterator> &main)
 {
+	typedef std::vector<unsigned int>::iterator Iterator;
+	std::vector<unsigned int> copy;
+
+	copy.reserve(array.size());
+	for (typename std::vector<Iterator>::iterator it = main.begin(); \
+		it != main.end(); it++)
+	{
+		for (int i = 0; i < sorting_level; i++)
+		{
+			Iterator pair_start = *it;
+			std::advance(pair_start, -sorting_level + i + 1);
+			copy.insert(copy.end(), *pair_start);
+		}
+	}
+	Iterator array_it = array.begin();
+	Iterator copy_it = copy.begin();
+	while (copy_it != copy.end())
+	{
+		*array_it = *copy_it;
+		array_it++;
+		copy_it++;
+	}
+}
+
+void	PmergeMe::jacobsthal_number(std::vector<std::vector<unsigned int>::iterator> &main, \
+	std::vector<std::vector<unsigned int>::iterator> &to_append)
+{
+	typedef std::vector<unsigned int>::iterator Iterator;
 
 	int _pjn = _jn(1);
 	int	_in = 0;
@@ -300,16 +309,16 @@ template <typename T> void	PmergeMe::jacobsthal_number(std::vector<T> &main, \
 		if (_jnd > static_cast<int>(to_append.size()))
 			break ;
 		int _not = _jnd;
-		typename std::vector<T>::iterator pendIt = \
+		std::vector<Iterator>::iterator pendIt = \
 			next(to_append.begin(), _jnd - 1);
-		typename std::vector<T>::iterator bountIt = \
+		std::vector<Iterator>::iterator bountIt = \
 			next(main.begin(), _cjn + _in);
 		while (_not)
 		{
-			typename std::vector<T>::iterator idx = \
+			std::vector<Iterator>::iterator idx = \
 				std::upper_bound(main.begin(), bountIt, *pendIt,\
-					 _operator<T>);
-			typename std::vector<T>::iterator inserted = \
+					 _operator<Iterator>);
+				std::vector<Iterator>::iterator inserted = \
 				main.insert(idx, *pendIt);
 			_not--;
 			pendIt = to_append.erase(pendIt);
@@ -324,10 +333,48 @@ template <typename T> void	PmergeMe::jacobsthal_number(std::vector<T> &main, \
 	}
 }
 
-template <typename T> void PmergeMe::insert(T &array, std::vector<typename T::iterator> &main, \
-	std::vector<typename T::iterator> &to_append, int sorting_level, int pair_units)
+/*-------------------------------deque functions-----------------------------*/
+
+void		PmergeMe::mergeInsertionSort(std::deque<unsigned int> &array, \
+	int sorting_level)
 {
-	typedef typename T::iterator Iterator;
+	typedef std::deque<unsigned int>::iterator Iterator;
+
+	int pair_units = array.size() / sorting_level;
+	if (pair_units < 2)
+		return ;
+
+	bool is_odd = pair_units % 2 == 1;
+	Iterator start = array.begin();
+	Iterator last = next(array.begin(), sorting_level * (pair_units));
+	Iterator end  = next(last, -(is_odd * sorting_level));
+
+	int			steps = 2 * sorting_level;
+
+	
+	for (Iterator it = start; it != end; std::advance(it, steps))
+	{
+		Iterator _this = next(it, sorting_level - 1);
+		Iterator _next = next(it, sorting_level * 2 - 1);
+		if (*_this > *_next)
+			swapPairs(_this, sorting_level);
+	}
+	mergeInsertionSort(array, sorting_level * 2);
+
+	std::deque<Iterator> main;
+	std::deque<Iterator> to_append;
+
+	insert(array, main, to_append, sorting_level, pair_units, is_odd, end);
+	_copy(array, sorting_level, main);
+	gettimeofday(&t_deq_end, NULL);
+}
+
+void		PmergeMe::insert(std::deque<unsigned int> &array, std::deque<std::deque<unsigned int>::iterator> &main, \
+	std::deque<std::deque<unsigned int>::iterator> &to_append, \
+	int sorting_level, int pair_units, bool is_odd, std::deque<unsigned int>::iterator end)
+{
+	typedef std::deque<unsigned int>::iterator Iterator;
+
 	main.insert(main.end(), next(array.begin(), sorting_level - 1));
 	main.insert(main.end(), next(array.begin(), sorting_level * 2 - 1));
 	
@@ -337,25 +384,86 @@ template <typename T> void PmergeMe::insert(T &array, std::vector<typename T::it
 			sorting_level * (i - 1) - 1));
 		main.insert(main.end(), next(array.begin(), sorting_level * i - 1));
 	}
+
+	if (is_odd)
+		to_append.insert(to_append.end(), next(end, sorting_level - 1));
+	
+	jacobsthal_number(main, to_append);
+
 	for (size_t i = 0; i < to_append.size(); i++)
 	{
-		typename std::vector<Iterator>::iterator _cp = \
+		typename std::deque<Iterator>::iterator _cp = \
 			next(to_append.begin(), i);
-		typename std::vector<Iterator>::iterator _cb = \
+		typename std::deque<Iterator>::iterator _cb = \
 			next(main.begin(), main.size() - to_append.size() + i);
-		typename std::vector<Iterator>::iterator idx = \
+		typename std::deque<Iterator>::iterator idx = \
 			std::upper_bound(main.begin(), _cb, *_cp, _operator<Iterator>);
 		main.insert(idx, *_cp);
 	}
-	if (odd_number >= 0)
+}
+
+void PmergeMe::_copy(std::deque<unsigned int> &array, int sorting_level, \
+	std::deque<std::deque<unsigned int>::iterator> &main)
+{
+	typedef std::deque<unsigned int>::iterator Iterator;
+	std::deque<unsigned int> copy;
+
+	for (typename std::deque<Iterator>::iterator it = main.begin(); \
+		it != main.end(); it++)
 	{
-		T temp;
-		temp.push_back(odd_number);
-		Iterator temp_it = temp.begin();
-		typename std::vector<Iterator>::iterator idx = 
-			std::upper_bound(main.begin(), main.end(), \
-				temp_it, _operator<Iterator>);
-		main.insert(idx, temp_it);
+		for (int i = 0; i < sorting_level; i++)
+		{
+			Iterator pair_start = *it;
+			std::advance(pair_start, -sorting_level + i + 1);
+			copy.insert(copy.end(), *pair_start);
+		}
+	}
+	Iterator array_it = array.begin();
+	Iterator copy_it = copy.begin();
+	while (copy_it != copy.end())
+	{
+		*array_it = *copy_it;
+		array_it++;
+		copy_it++;
+	}
+}
+
+void	PmergeMe::jacobsthal_number(std::deque<std::deque<unsigned int>::iterator> &main, \
+	std::deque<std::deque<unsigned int>::iterator> &to_append)
+{
+	typedef std::deque<unsigned int>::iterator Iterator;
+
+	int _pjn = _jn(1);
+	int	_in = 0;
+	for (int k = 2;; k++)
+	{
+		int _cjn = _jn(k);
+		int _jnd = _cjn - _pjn;
+		int _os = 0;
+		if (_jnd > static_cast<int>(to_append.size()))
+			break ;
+		int _not = _jnd;
+		std::deque<Iterator>::iterator pendIt = \
+			next(to_append.begin(), _jnd - 1);
+			std::deque<Iterator>::iterator bountIt = \
+			next(main.begin(), _cjn + _in);
+		while (_not)
+		{
+			std::deque<Iterator>::iterator idx = \
+				std::upper_bound(main.begin(), bountIt, *pendIt,\
+					 _operator<Iterator>);
+					 std::deque<Iterator>::iterator inserted = \
+				main.insert(idx, *pendIt);
+			_not--;
+			pendIt = to_append.erase(pendIt);
+			std::advance(pendIt, -1);
+	
+			_os += (inserted - main.begin() == _cjn + _in);
+			bountIt = next(main.begin(), _cjn + _in - _os);
+		}
+		_pjn = _cjn;
+		_in += _jnd;
+		_os = 0;
 	}
 }
 
