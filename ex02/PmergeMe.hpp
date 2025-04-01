@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:25 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/03/27 14:30:58 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/04/01 13:45:35 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #define DEBUG_ON 1
 #define DEBUG_OFF 0
 
+
 class PmergeMe
 {
 private:
@@ -38,7 +39,6 @@ private:
 	timeval									t_deq_start;
 	timeval									t_deq_end;
 	int										odd_number;			//saves odd number for end if nessecary. else its -1
-	
 public:
 									PmergeMe(const int _argc, char **_argv);
 									PmergeMe(const PmergeMe &src);
@@ -106,4 +106,3 @@ public:
 			const char* 			what() const throw();
 	};
 };
-
