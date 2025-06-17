@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:25 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/04/01 13:45:35 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/04/16 12:33:20 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,13 @@
 #include <ctime>
 #include <cmath>
 #include <time.h>
+#include <cstdlib>
+#include <climits>
+#include <cerrno>
+#include <map>
 
 #define DEBUG_ON 1
 #define DEBUG_OFF 0
-
 
 class PmergeMe
 {
@@ -38,7 +41,6 @@ private:
 	timeval									t_vec_end;
 	timeval									t_deq_start;
 	timeval									t_deq_end;
-	int										odd_number;			//saves odd number for end if nessecary. else its -1
 public:
 									PmergeMe(const int _argc, char **_argv);
 									PmergeMe(const PmergeMe &src);
@@ -63,10 +65,10 @@ public:
 										std::vector<std::vector<unsigned int>::iterator> &main);
 	void							_copy(std::deque<unsigned int> &array, int sorting_level, \
 										std::deque<std::deque<unsigned int>::iterator> &main);
-	template <typename T>	void	swapPairs(T it, int PL);
+	template <typename T>	void	swapPairs(T it, int sorting_level);
 	template <typename T>	bool	isSorted(T first, T second);
 	void							checkDouble(unsigned int arg);
-	long 							_jn(long n);
+	long 							_jacobsthal_nbr(long n);
 
 	/*--------------------------------------sorting functions-----------------------------------*/
 	void							mergeInsertionSort(std::vector<unsigned int> &array, \
@@ -81,21 +83,14 @@ public:
 										std::deque<std::deque<unsigned int>::iterator> &to_append);									
 	void							insert(std::vector<unsigned int> &array, std::vector<std::vector<unsigned int>::iterator> &main, \
 										std::vector<std::vector<unsigned int>::iterator> &to_append, \
-										int sorting_level, int pair_units, bool is_odd, \
-										std::vector<unsigned int>::iterator end);
+										int sorting_level, int pair_units, bool is_odd, std::vector<unsigned int>::iterator end);
 	void							insert(std::deque<unsigned int> &array, std::deque<std::deque<unsigned int>::iterator> &main, \
 										std::deque<std::deque<unsigned int>::iterator> &to_append, \
-										int sorting_level, int pair_units, bool is_odd, \
-										std::deque<unsigned int>::iterator);
+										int sorting_level, int pair_units, bool is_odd, std::deque<unsigned int>::iterator end);
 	template <typename T>  T		next(T start, int steps);
 
 	/*--------------------------------------Custom Exceptions-----------------------------------*/
 	class InvalidInputException : public std::exception
-	{
-		public:
-			const char* 			what() const throw();
-	};
-	class UnableToGetNumberException : public std::exception
 	{
 		public:
 			const char* 			what() const throw();
@@ -105,4 +100,7 @@ public:
 		public:
 			const char* 			what() const throw();
 	};
+
+	/*---------------------------------------------Debug----------------------------------------*/
+	template<typename T> bool checkSorted(T array);
 };

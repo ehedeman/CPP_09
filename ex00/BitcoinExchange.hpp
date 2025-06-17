@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 14:31:33 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/01/31 11:50:07 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/03/27 11:20:13 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include <cstdlib>
 #include <limits>
 #include <float.h>
-#define FORMAT "0000-00-00 |"
+#define FORMAT "0000-00-00"
 #define HEADLINE "date | value"
 
 class BitcoinExchange

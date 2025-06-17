@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 14:31:14 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/01/31 13:53:30 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/03/27 11:39:28 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,144 @@ std::list<std::string>				BitcoinExchange::getFileData()const{return (this->file
 std::list<std::string>				BitcoinExchange::getCSVData()const{return (this->csvData);}
 std::list<std::string>::iterator	BitcoinExchange::getIterator()const{return (this->it);}
 
+/*------------------------------------------beginning of program--------------------------------------------------*/
+void	BitcoinExchange::BitCoinExchangeMain()
+{
+	if (this->readFile())
+			return ;
+	it = this->fileData.begin();
+	while (it != this->fileData.end())
+	{
+		std::string temp = *it;
+		std::string s_year;
+		std::string s_month;
+		std::string s_day;
+		int i = 0;
+		
+		this->setDate(temp, i, s_year);
+		this->setDate(temp, i, s_month);
+		this->setDate(temp, i, s_day);
+		char	**ptr = new char *;
+		year = (int)std::strtod(s_year.c_str(), ptr);
+		if (**ptr && (strlen(*ptr) != 1))
+			std::cout	<< "error";
+		month = (int)std::strtod(s_month.c_str(), ptr);
+		if (**ptr && (strlen(*ptr) != 1))
+			std::cout	<< "error";
+		day = (int)std::strtod(s_day.c_str(), ptr);
+		if (**ptr && (strlen(*ptr) != 1))
+			std::cout	<< "error";
+		if (year < 2009 || year > 2022)		//bitcoin was 'founded' on 3 January 2009 so before 2009 dont make sense
+			this->badInput(*it);
+		else if (month < 1 || month > 12)
+			this->badInput(*it);
+		else if (this->checkDay())
+			this->badInput(*it);
+		else if (this->checkValue(temp, i) >= 0)
+		{
+			this->value = this->checkValue(temp, i);
+			float _course =  this->calculateCourse(temp);
+			if (_course < 0)
+				continue ;
+			std::cout << s_year << "-" << s_month << "-" << s_day <<
+			" => " << this->value << " = " << _course << std::endl;
+		}
+		it++;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------*/
+
+int		BitcoinExchange::readFile()
+{
+	std::list<std::string>	list;
+	std::fstream			file;
+	std::string				buff;
+
+	file.open("data.csv", std::ios::in);
+	if (file.is_open())
+	{
+		while (std::getline(file, buff))
+			this->csvData.push_back(buff);
+		file.close();
+	}
+	else
+	{
+		std::cout << "Error: could not open file." << std::endl;
+		return (-1);
+	}
+	file.open(this->filename.c_str(), std::ios::in);
+	if (file.is_open())
+	{
+		while (std::getline(file, buff))
+			list.push_back(buff);
+		file.close();
+		rightFormat(list);
+		this->dataInit(list);
+		// this->printList(list);
+		// std::cout << std::endl;
+		// this->printList(this->fileData);
+		// std::cout << std::endl;
+		// this->printList(this->csvData);
+	}
+	else
+	{
+		std::cout << "Error: could not open file." << std::endl;
+		return (1);
+	}
+	return (0);
+}
+
+void		BitcoinExchange::dataInit(std::list<std::string> &list)
+{
+	this->it = list.begin();
+	this->it++;					//to skip the "date | value"
+
+	while (this->it != list.end())
+	{
+		std::string temp = *this->it;
+		std::string _new;
+		size_t i = 0;
+		int decimal = 0;
+
+		while (i < temp.length())
+		{
+			while (temp[i])
+			{
+				if (temp[i] == '.' && !decimal)
+				{
+					_new += temp[i];
+					decimal++;
+					i++;
+				}
+				else if (!isdigit(temp[i]))
+					break ;
+				_new += temp[i];
+				i++;
+			}
+			if (!temp[i])
+				break ;
+			else if (temp[i] == '-' || temp[i] == ' ' || temp[i] == '|')
+			{
+				if (temp[i] == '-')
+					_new += temp[i];
+				else
+					_new += ',';
+				while (temp[i] && !isdigit(temp[i]))
+				{
+					if (temp[i] == '|' && temp[i + 2]  == '-' && isdigit(temp[i + 3]))
+						_new += '-';
+					i++;
+				}
+			}
+			if (!isdigit(temp[i]))
+				i++;
+		}
+		if (_new[0])
+			this->fileData.push_back(_new);
+		it++;
+	}
+}
 
 void								BitcoinExchange::rightFormat(std::list<std::string>	&list)
 {
@@ -88,7 +226,7 @@ void								BitcoinExchange::rightFormat(std::list<std::string>	&list)
 		else if (str[i] != HEADLINE[i])
 			throw WrongFormatException();
 	}
-	iterator++;
+	iterator++;	//skip newline
 	while (iterator != list.end())
 	{
 		std::string str = *iterator;
@@ -106,6 +244,55 @@ void								BitcoinExchange::rightFormat(std::list<std::string>	&list)
 				throw WrongFormatException();
 		}
 		iterator++;
+	}
+}
+
+void	BitcoinExchange::setDate(std::string temp, int &i, std::string &date)
+{
+	while (temp[i] && (temp[i] != '-' && temp[i] != ','))
+	{
+		date += temp[i];
+		i++;
+	}
+	i++; //damit es nicht auf komma endet
+}
+
+void	BitcoinExchange::badInput(std::string &complete)
+{
+	std::string _year;
+	std::string _month;
+	std::string _day;
+
+	int i = 0;
+	while (complete[i] && complete[i] != '-')
+	{
+		_year += complete[i];
+		i++;	
+	}
+	if (!complete[i])
+		std::cout << "Error: bad input => " + complete << std::endl;	//macht sinn
+	else
+	{
+		i++;		//skip ',' bzw. '-' lol
+		while (complete[i] && complete[i] != '-')
+		{
+			_month += complete[i];
+			i++;
+		}
+		if (!complete[i])
+			std::cout << "Error: bad input => " + _year <<
+			"-" + _month << std::endl;
+		else
+		{
+			i++;		//skip ',' bzw. '-' lol
+			while (complete[i] && complete[i] != ',')
+			{
+				_day += complete[i];
+				i++;
+			}
+			std::cout << "Error: bad input => " + _year << "-" + _month <<
+			"-" + _day << std::endl; 
+		}
 	}
 }
 
@@ -193,46 +380,6 @@ void	BitcoinExchange::printList(std::list<std::string> &list)
 }
 
 
-void	BitcoinExchange::badInput(std::string &complete)
-{
-	std::string _year;
-	std::string _month;
-	std::string _day;
-
-	int i = 0;
-	while (complete[i] && complete[i] != ',')
-	{
-		_year += complete[i];
-		i++;	
-	}
-	if (!complete[i])
-		std::cout << "Error: bad input => " + complete << std::endl;	//macht sinn
-	else
-	{
-		i++;		//skip komma lol
-		while (complete[i] && complete[i] != ',')
-		{
-			_month += complete[i];
-			i++;	
-		}
-		if (!complete[i])
-			std::cout << "Error: bad input => " + _year <<
-			"-" + this->month << std::endl;	//das nicht so
-		else
-		{
-			i++;		//skip komma lol
-			while (complete[i] && complete[i] != ',')
-			{
-				_day += complete[i];
-				i++;
-			}
-			std::cout << "Error: bad input => " + _year << "-" + _month <<
-			"-" + _day << std::endl; 
-		}
-	}
-}
-
-
 int		BitcoinExchange::checkDay()
 {
 	if (this->day == 29 && this->month == 2 && (this->year % 4))		// 29. feburar und kein schaltjahr
@@ -244,15 +391,6 @@ int		BitcoinExchange::checkDay()
 	else if (this->day > 30 && !(this->month % 2))		// monat = feburat, april etc und tag == 31
 		return (1);
 	return (0);
-}
-void	BitcoinExchange::setDate(std::string temp, int &i, std::string &date)
-{
-	while (temp[i] && temp[i] != ',')
-	{
-		date += temp[i];
-		i++;
-	}
-	i++; //damit es nicht auf komma endet
 }
 
 float	BitcoinExchange::checkValue(std::string &complete, int i)
@@ -283,139 +421,6 @@ float	BitcoinExchange::checkValue(std::string &complete, int i)
 	}
 	return (_value);
 }
-int		BitcoinExchange::readFile()//filestuff
-{
-	std::list<std::string>	list;
-	std::fstream			file;
-	std::string				buff;
-
-	file.open("data.csv", std::ios::in);
-	if (file.is_open())
-	{
-		while (std::getline(file, buff))
-			this->csvData.push_back(buff);
-		file.close();
-	}
-	else
-	{
-		std::cout << "Error: could not open file." << std::endl;
-		return (-1);
-	}
-	file.open(this->filename.c_str(), std::ios::in);
-	if (file.is_open())
-	{
-		while (std::getline(file, buff))
-			list.push_back(buff);
-		file.close();
-		rightFormat(list);
-		this->dataInit(list);
-		// this->printList(list);
-		// std::cout << std::endl;
-		// this->printList(this->fileData);
-		// std::cout << std::endl;
-		// this->printList(this->csvData);
-	}
-	else
-	{
-		std::cout << "Error: could not open file." << std::endl;
-		return (1);
-	}
-	return (0);
-}
-
-
-void		BitcoinExchange::dataInit(std::list<std::string> &list)
-{
-	this->it = list.begin();
-	this->it++;					//to skip the "date | value"
-
-	while (this->it != list.end())
-	{
-		std::string temp = *this->it;
-		std::string _new;
-		size_t i = 0;
-		int decimal = 0;
-
-		while (i < temp.length())
-		{
-			while (temp[i])
-			{
-				if (temp[i] == '.' && !decimal)
-				{
-					_new += temp[i];
-					decimal++;
-					i++;
-				}
-				else if (!isdigit(temp[i]))
-					break ;
-				_new += temp[i];
-				i++;
-			}
-			if (!temp[i])
-				break ;
-			else if (temp[i] == '-' || temp[i] == ' ' || temp[i] == '|')
-			{
-				_new += ',';
-				while (temp[i] && !isdigit(temp[i]))
-				{
-					if (temp[i] == '|' && temp[i + 2]  == '-' && isdigit(temp[i + 3]))
-						_new += '-';
-					i++;
-				}
-			}
-			if (!isdigit(temp[i]))
-				i++;
-		}
-		if (_new[0])
-			this->fileData.push_back(_new);
-		it++;
-	}
-}
-
-void	BitcoinExchange::BitCoinExchangeMain()
-{
-	if (this->readFile())
-			return ;
-	it = this->fileData.begin();
-	while (it != this->fileData.end())
-	{
-		std::string temp = *it;
-		std::string s_year;
-		std::string s_month;
-		std::string s_day;
-		int i = 0;
-		
-		this->setDate(temp, i, s_year);
-		this->setDate(temp, i, s_month);
-		this->setDate(temp, i, s_day);
-		char	**ptr = new char *;
-		year = (int)std::strtod(s_year.c_str(), ptr);
-		if (**ptr && (strlen(*ptr) != 1))
-			std::cout	<< "error";
-		month = (int)std::strtod(s_month.c_str(), ptr);
-		if (**ptr && (strlen(*ptr) != 1))
-			std::cout	<< "error";
-		day = (int)std::strtod(s_day.c_str(), ptr);
-		if (**ptr && (strlen(*ptr) != 1))
-			std::cout	<< "error";
-		if (year < 2009 || year > 2022)
-			this->badInput(*it);
-		else if (month < 1 || month > 12)
-			this->badInput(*it);
-		else if (this->checkDay())
-			this->badInput(*it);
-		else if (this->checkValue(temp, i) >= 0)
-		{
-			this->value = this->checkValue(temp, i);
-			float _course =  this->calculateCourse(temp);
-			if (_course < 0)
-				continue ;
-			std::cout << s_year << "-" << s_month << "-" << s_day <<
-			" => " << this->value << " = " << _course << std::endl;
-		}
-		it++;
-	}
-}	//date()
 	
 const char* BitcoinExchange::WrongFormatException::what() const throw()
 {

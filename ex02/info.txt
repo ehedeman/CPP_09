@@ -1,19 +1,31 @@
-PAIRLEVEL0	= 0 1 9 3 5 2 5 2 4 2 9 6 2 3 1 8
+Number sequence	= 0 1 9 3 5 2 5 2 4 2 9 6 2 3 1 8
+SORTINGLEVEL 1		= 0 1	9 3		5 2		5 2		4 2		9 6		2 3		1 8
+SORTINGLEVEL 2		= 0 1 9 3	5 2 5 2		4 2 9 6		2 3 1 8
+SORTINGLEVEL 3		= 0 1 9 3 5 2 5 2	4 2 9 6 2 3 1 8
 
-PAIRLEVEL1	= 0 1 9 3 5 2 5 2	4 2 9 6 2 3 1 8
-PAIRLEVEL2	= 0 1 9 3	5 2 5 2		4 2 9 6		2 3 1 8
-PAIRLEVEL3	= 0 1	9 3		5 2		5 2		4 2		9 6		2 3		1 8
+P1 -> new number always determined by	CurrentIndex + 2
+P2 -> new number						CurrentIndex + 4	| *2
+P3 -> new number						CurrentIndex + 8	| *2
 
-etc.
+so the next number is always determined by CurrentIndex + 2 ^ sorting_level
 
-PAIRLEVEL1 = anzahl der elemente / 1 (um beim 1. element des nächsten paars zu landen. -> std::pair aufteilung)
-PAIRLEVEL2 = anzahl der elemente / 2*PAIRLEVEL(hier 2) (um beim 1. element des nächsten paars zu landen.)
+The swapping of pairs happens throug iter_swap(), a function that can swap
+areas of iterators.
 
-Max. PAIRLEVEL berechnen: Anz. Elemente
+so
 
-also entweder std::pair() um zumindest die base level pairs hinzubekommen, von da aus kann man
-mit pairlevel blah arbeieten
+Numbers :			1 2 3 4		5 6 7 8
+Index :				0 1 2 3		4 5 6 7
 
-oder pairlevel als base und dann immer so und so viele mal pairlevel skippen um zum naechsten,
-pairlevel according pair zu kommen idkkkkk
+sorting_level = 4;
 
+
+start	= 0;
+end		= sorting_level;
+while (start != end)
+{
+	iter_swap(start, start + sorting_level);
+	start++;
+}
+
+would give result :	5 6 7 8		1 2 3 4

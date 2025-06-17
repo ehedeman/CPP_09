@@ -1,0 +1,276 @@
+
+
+Ford-Johnson-Algorithm.\
+
+1. Recursively sort into pairs, then pairs of pairs etc.:
+
+	Take a number sorting_level, starting at 1, being an argument of the function.
+	Before it gets given to the function again as recursion it gets multiplied by
+	two.
+	That way we get the pairs of pairs.
+
+	Number sequence:	  73 232 9 3 55 22 5 2 4 2 99 6 21 33 11 8
+
+	after SORTINGLEVEL = 1	= 73 232	3 9	22 55	2 5	4 12	6 99	21 33	8 11
+
+	after SORTINGLEVEL = 2	= 3 9 73 232 	2 5 22 55 	4 12 6 99	8 11 21 33
+
+	after SORTINGLEVEL = 3	= 4 12 6 99 8 11 21 33		3 9 73 232 2 5 22 55 		
+
+	\\\\\\\\\\\\\ all sorting levels get x2 during code, gets explained later\\\\\\\\\\\\\\\\\
+	-> sorting level = 1 means every second number cause 1*2 = 2 ykyk
+
+2. If there is a odd number it gets left alone
+
+	the boolean variable is_odd determines whether there is an odd number or not by 
+	checking if the number of pairs (on the first level the pair_number = number of
+	digits in the array) is even or odd
+	
+3. Sorting the pairs by the smallest
+	
+	we determine the first and last pair, as well as the end of the sequence (last is
+	used to determine end, end is being used for the sorting loop) by calculations 
+	(last object cant just be assumed to be	array.end() since we can have an odd amount
+	of pairs every sorting_level no matter the number of objects in the array.
+	
+	we then have the steps variable which is sorting_level * 2.
+	
+	it needs to be sorting_level * 2 because there is no sorting happening on 
+	sorting_level = 1. If we didnt use the steps variable and instead just the
+	sorting_level, then we'd sort on level 1 which doesnt make much sense because
+	it defies the purpose of the algorithm ( the sequence would be sorted by comparing
+	every object with the next ) .
+	
+	We then enter a loop, where we have the current object _this and the next object _next
+	as well as the iterator 'it'.
+	
+	_this gets determined by using it and advancing it by sorting_level -1
+	_next gets determined by using it and advancing it by steps - 1
+
+	(-1 because we want to compare the second object of each pair, that is because we work
+	with recursion. usually we'd start with the first, but due to the recursion we need to
+	work backwards.) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+	we then compare _this and _next and swap if nessecary.
+	
+	e.g:
+	
+	SORTINGLEVEL = 2	= 73 232	9 3	55 22	5 2	4 12	99 6	21 33	11 8
+
+	steps = 4
+	sorting_level = 2
+	
+	it = 73 (first number)
+	_this = 232 (second number cause it + sorting_level - 1)
+	_next = 3 (fourth object cause it + steps - 1)
+	
+	we compare 1 and 3, determine its not okay and swaps it.
+	
+	e.g 73 232	9 3
+	
+	_this = 232
+	sorting_level = 2
+	
+	start vom swap = 232 plus -sorting_level + 1 stellen (minus weil wir wollen backwards um
+	den anfang vom pair zu bekommen) = 73
+	
+	end = start + sorting level = 9
+	
+	we then swap in a loop by iterating start by adding one, and swapping start with start + sorting_level.
+	
+	1. 73 232	9 3
+	2. 9 232	73 3
+	3. 9 3		73 232
+
+	
+	once that is done, it gets advanced exactly steps amount and we call the current function again, using
+	steps as the new sorting_level argument.
+
+	once that recursion is done (the recursion anchor being if the pair_amount is < 2, so there being nothing
+	to compare anymore), we move on to the insertion part.
+	
+4. insertion without sorting
+
+	we take two arrays, main and to_append.
+	
+	main gets the complete first pair, and after that every second object of a pair
+	to_append gets all first objects of a pair.
+	
+	e.g
+	
+	SORTINGLEVEL = 2	= 73 232	9 3	55 22	5 2	4 12	99 6	21 33	11 8
+	
+	after first sorting: 	3 9	73 232 		2 5	22 55 	4 12	6 99	8 11	21 33
+				1a	1b		2a	2b	3a	3b	4a	4b
+
+
+	main: 		3 9	73 232	22 55	6 99	21 33
+	to_append: 	2 5	4 12	8 11
+	
+	if there is an odd pair then it goes to to_append
+	
+5. insertion with sorting by using the jacobsthal sequence and binary search
+
+	Jacobsthal sequence: a set sequence like fibonacci
+	-> it tells the algorithm which positions to insert the smaller elements into, in a way 
+	that spreads them out efficiently and avoids unnecessary comparisons
+	
+	insert the pend elements back into the main chain using binary search, but in a specific
+	order based on the Jacobsthal sequence. This order ensures that each binary search is as
+	efficient as possible.
+	
+	-> we have a function that calculates the corresponding jacobsthal number for a certain value
+	
+	with that we have a previous jn that is first set to the jn of 1.
+	
+	then we enter a loop, where the value k is being iterated. k is the value we use to get the
+	ccurrent jn.
+	so in the loops the current jn starts with jn value of 2, because thats the start value of k.
+	
+	we then calculate the differnece of the previous and current jn.
+	
+	that difference is compared to the size of the array, to avoid trying to use space outside the array.
+	if its larget then the loop ends.
+	
+	then we set a counter as the difference between current and previous jn.
+	
+	that counter is used in another loop later.
+	
+	we also have two iterators, one called pend and one called bound. pend iterates to_append and bound
+	iterates main.
+	
+	pend = anfang von to_append + differnece between current and previosu jn - 1
+	bound = anfang von main + current jn + amount of inserts we had so far
+	
+	then we enter the loop, that loops counter amount of times.
+	
+	we have the iterator idx, that is always the positon where the value given could be added.
+	
+	the way it gets determined is by giving the beginning of main, then using the bound iterator
+	as boundary as to how far we're supposed to search. then we use the pend iterator as value and
+	compare for the smallest. so we want the largest possible number to insert next to.
+	
+	we also have an iterator inserted, that is the result of main.insert() with idx and the value of pend.
+	
+	pend then gets changed to the result of to_append.erase(pend).
+	we then advance pend by -1, setting it back by one so we're not looking at the space we just erased,
+	but the previous number.
+	
+	we also have an offset variable. 
+	
+	Sometimes the inserted number in inserted at the exact index of where the bound should be.
+	When this happens, it eclipses the bound of the next pend, and it does more comparisons
+	than it should. We need to offset when this happens,therefor the variable.
+	
+	Its value is set to whether the difference from inserted to the beginning of main is equal to
+	the sum of current jn and the amount of inserts that happened yet. so 0 or 1.
+	
+	that value is then used when bound is set to the beginnning of main + the sum of current jn,
+	the amount of inserts we had and the offset value.
+	
+	once that loop is done we move on to:
+	
+	the previous jn gets set to the current jn,
+	the amount of inserts get added by the difference of previous and current jn and offset is set to 0.
+	
+6. inserting the rest of append to main
+
+	since the jn likely had become larger than the amount of objects in the array at some point,
+	we insert the rest of the objects from to_append to main with the least possible comparisons.
+	
+	here we insert in reverse order, and calculate the starting bound to insert pend number to the pair 
+	of the first number.
+	
+	the index of bound is calculated:
+	
+	size_of_main - size_of_pend + index_of_current_pend.
+	
+	so we have a loop, with the iterator i = 0.
+	
+	the iterator current_append is being set to the beginning of to_append plus i
+	the iterator current_bound is set to the beginning of main minus the size of append
+	 plus i and plus is_odd.
+	
+	we also have the idx iterator again, that is set to be somwehre between main beginning,
+	and current_bound, looking for the largest number to insert the value of current_append
+	next to.
+	
+	we then insert into main at idx.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
