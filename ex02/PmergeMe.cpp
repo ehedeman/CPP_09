@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:33 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/06/26 13:55:17 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/06/26 13:58:15 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void			PmergeMe::getSorted()
 	// std::cout << std::endl << "Full containers sorted: " << std::endl;
 	// printContainer(this->_deque, 0, "deque", DEBUG_ON);
 	// printContainer(this->_vec, 0, "vector", DEBUG_ON);
+
 	// std::cout << "Vector sorted: ";
 	// if (checkSorted(_vec))
 	// 	std::cout << "true" << std::endl;
