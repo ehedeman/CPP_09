@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 11:53:21 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/02/03 10:43:12 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/06/26 14:12:04 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ void							RPN::rpnMain()
 		op = isOperator(input[i]);
 		if (op >= 0)
 		{
-			assignNumbers(first_nbr, second_nbr);
-			switch (op)
+			assignNumbers(first_nbr, second_nbr);	//gets first and second number from stack
+			switch (op)	//checks what operator
 			{
 			case DIVISION:
 				if (!second_nbr)
@@ -69,7 +69,7 @@ void							RPN::rpnMain()
 			default:
 				std::cout << "symbol case " << op << " not recognized." << std::endl;
 			}
-			this->stack.push(result);
+			this->stack.push(result); //does the mathmaticl operation and pushes the result
 		}
 	}
 	std::cout << result << std::endl;
@@ -86,6 +86,7 @@ void							RPN::checkFormat()
 
 void							RPN::readInput(size_t &i)
 {
+	//reading the numbers until a operator is found
 	while (this->input[i])
 	{
 		std::string str = "";

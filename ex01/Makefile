@@ -6,7 +6,7 @@
 #    By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/14 14:53:54 by ehedeman          #+#    #+#              #
-#    Updated: 2025/01/31 13:42:42 by ehedeman         ###   ########.fr        #
+#    Updated: 2025/06/26 13:59:29 by ehedeman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ CXX = c++
 
 RM = rm -rf
 MKDIR = mkdir -p
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98  
 
 all: $(NAME)
 

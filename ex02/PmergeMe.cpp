@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:33 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/06/26 13:58:15 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/06/26 14:16:47 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ void	PmergeMe::mergeInsertionSort(std::vector<unsigned int> &array, \
 		gettimeofday(&t_vec_end, NULL);	
 		return ;
 	}
-		typedef std::vector<unsigned int>::iterator Iterator;
+	typedef std::vector<unsigned int>::iterator Iterator;
 
 	int pair_amount = array.size() / sorting_level;
 	if (pair_amount < 2)
