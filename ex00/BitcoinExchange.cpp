@@ -6,7 +6,7 @@
 /*   By: ehedeman <ehedeman@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 14:31:14 by ehedeman          #+#    #+#             */
-/*   Updated: 2025/03/27 11:39:28 by ehedeman         ###   ########.fr       */
+/*   Updated: 2025/07/01 09:13:51 by ehedeman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,8 @@ void		BitcoinExchange::dataInit(std::list<std::string> &list)
 
 void								BitcoinExchange::rightFormat(std::list<std::string>	&list)
 {
+	if (list.size() < 1)
+		throw WrongFormatException();
 	std::list<std::string>::iterator iterator = list.begin();
 
 	std::string str = *iterator;
@@ -273,7 +275,7 @@ void	BitcoinExchange::badInput(std::string &complete)
 		std::cout << "Error: bad input => " + complete << std::endl;	//macht sinn
 	else
 	{
-		i++;		//skip ',' bzw. '-' lol
+		i++;		//skip ',' bzw. '-'
 		while (complete[i] && complete[i] != '-')
 		{
 			_month += complete[i];
